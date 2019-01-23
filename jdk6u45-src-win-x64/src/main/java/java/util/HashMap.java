@@ -102,6 +102,14 @@ import java.io.*;
  * @see	    TreeMap
  * @see	    Hashtable
  * @since   1.2
+ *
+ * 参考资料：
+ * Hashmap为什么容量是2的幂次，什么是负载因子
+ * https://blog.csdn.net/a_long_/article/details/51594159
+ *
+ * 为什么java Hashmap 中的加载因子是默认为0.75
+ * https://blog.csdn.net/hcmony/article/details/56494527
+ *
  */
 
 public class HashMap<K,V>
@@ -111,6 +119,7 @@ public class HashMap<K,V>
 
     /**
      * The default initial capacity - MUST be a power of two.
+     * 初始容量 - 必须是2的幂
      */
     static final int DEFAULT_INITIAL_CAPACITY = 16;
 
@@ -118,32 +127,39 @@ public class HashMap<K,V>
      * The maximum capacity, used if a higher value is implicitly specified
      * by either of the constructors with arguments.
      * MUST be a power of two <= 1<<30.
+     * 最大容量为2的30次方
      */
     static final int MAXIMUM_CAPACITY = 1 << 30;
 
     /**
      * The load factor used when none specified in constructor.
+     * 默认负载因子
      */
     static final float DEFAULT_LOAD_FACTOR = 0.75f;
 
     /**
      * The table, resized as necessary. Length MUST Always be a power of two.
+     * 表，需要的时候会扩容，长度必须是2的幂
      */
     transient Entry[] table;
 
     /**
      * The number of key-value mappings contained in this map.
+     * 这个map中键-值对的数量
      */
     transient int size;
 
     /**
      * The next size value at which to resize (capacity * load factor).
+     * 下次扩容的临界值, 值为容量capacity乘以负载因子loadFactor
+     * size>=threadhold就会扩容.
      * @serial
      */
     int threshold;
 
     /**
      * The load factor for the hash table.
+     * 负载因子
      *
      * @serial
      */
@@ -178,11 +194,13 @@ public class HashMap<K,V>
                                                loadFactor);
 
         // Find a power of 2 >= initialCapacity
+        //找一个大于等于initialCapacity的且是2的幂的数.例如initialCapacity=5, 那么这段代码最终找到的capacity为8.
         int capacity = 1;
         while (capacity < initialCapacity)
             capacity <<= 1;
 
         this.loadFactor = loadFactor;
+        //下次扩容的临界值
         threshold = (int)(capacity * loadFactor);
         table = new Entry[capacity];
         init();
@@ -254,6 +272,7 @@ public class HashMap<K,V>
 
     /**
      * Returns index for hash code h.
+     * 当length等于2的幂时,h&(length-1)等于h%length
      */
     static int indexFor(int h, int length) {
         return h & (length-1);
