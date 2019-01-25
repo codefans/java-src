@@ -261,6 +261,14 @@ public class HashMap<K,V>
      * because HashMap uses power-of-two length hash tables, that
      * otherwise encounter collisions for hashCodes that do not differ
      * in lower bits. Note: Null keys always map to hash 0, thus index 0.
+     * 这段代码是为了对key的hashCode进行扰动计算，
+     * 防止不同hashCode的高位不同但低位相同导致的hash冲突。
+     * 简单点说，就是为了把高位的特征和低位的特征组合起来，降低哈希冲突的概率，
+     * 也就是说，尽量做到任何一位的变化都能对最终得到的结果产生影响。
+     *
+     * 这个方法要结合indexFor才能达到减少冲突的目的，
+     * 比如table的初始容量length是16，那么indexFor中h&(length-1)，length-1=15,对应的二进制为01111，
+     * 那么只有h的后5位越散, 冲突才会越小
      */
     static int hash(int h) {
         // This function ensures that hashCodes that differ only by
@@ -272,7 +280,7 @@ public class HashMap<K,V>
 
     /**
      * Returns index for hash code h.
-     * 当length等于2的幂时,h&(length-1)等于h%length
+     * 只有当length等于2的幂时,h&(length-1)才会等于h%length
      */
     static int indexFor(int h, int length) {
         return h & (length-1);
@@ -770,6 +778,9 @@ public class HashMap<K,V>
     void addEntry(int hash, K key, V value, int bucketIndex) {
 	Entry<K,V> e = table[bucketIndex];
         table[bucketIndex] = new Entry<K,V>(hash, key, value, e);
+        /**
+         * 大于等于临界值,长度扩大2倍
+         */
         if (size++ >= threshold)
             resize(2 * table.length);
     }
