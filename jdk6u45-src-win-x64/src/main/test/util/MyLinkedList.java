@@ -5,7 +5,9 @@
  * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
-package java.util;
+package util;
+
+import java.util.*;
 
 /**
  * Linked list implementation of the <tt>List</tt> interface.  Implements all
@@ -71,7 +73,7 @@ package java.util;
  * @param <E> the type of elements held in this collection
  */
 
-public class LinkedList<E>
+public class MyLinkedList<E>
     extends AbstractSequentialList<E>
     implements List<E>, Deque<E>, Cloneable, java.io.Serializable
 {
@@ -87,7 +89,7 @@ public class LinkedList<E>
     /**
      * Constructs an empty list.
      */
-    public LinkedList() {
+    public MyLinkedList() {
         header.next = header.previous = header;
     }
 
@@ -99,7 +101,7 @@ public class LinkedList<E>
      * @param  c the collection whose elements are to be placed into this list
      * @throws NullPointerException if the specified collection is null
      */
-    public LinkedList(Collection<? extends E> c) {
+    public MyLinkedList(Collection<? extends E> c) {
 	this();
 	addAll(c);
     }
@@ -750,7 +752,7 @@ public class LinkedList<E>
             checkForComodification();
             Entry<E> lastNext = lastReturned.next;
             try {
-                LinkedList.this.remove(lastReturned);
+                MyLinkedList.this.remove(lastReturned);
             } catch (NoSuchElementException e) {
                 throw new IllegalStateException();
             }
@@ -798,30 +800,25 @@ public class LinkedList<E>
     /**
      * 在entry元素前面添加元素e
      * 主要是调整entry元素和newEntry元素的next、previous两个指针
-     *
-     * 其中：
-     *      Entry<E> newEntry = new Entry<E>(e, entry, entry.previous);
-     *      newEntry.previous.next = newEntry;
-     *      newEntry.next.previous = newEntry;
-     * 相当于如下代码
-     *      Entry<E> newEntry = new Entry<E>(e, null, null);
-     *      newEntry.next = entry;
-     *      newEntry.previous = entry.previous;
-     *      entry.previous.next = newEntry;
-     *      entry.previous = newEntry;
-     *
-     * 参看MyLinkedList.addBefore方法
+     * newEntry.next = entry;
+     * newEntry.previous = entry.previous;
      *
      * @param e
      * @param entry
      * @return
      */
     private Entry<E> addBefore(E e, Entry<E> entry) {
-	Entry<E> newEntry = new Entry<E>(e, entry, entry.previous);
-	newEntry.previous.next = newEntry;
-	newEntry.next.previous = newEntry;
+//	Entry<E> newEntry = new Entry<E>(e, entry, entry.previous);
+//	newEntry.previous.next = newEntry;
+//	newEntry.next.previous = newEntry;
+    //以上三行代码相当于下面这段代码
+    Entry<E> newEntry = new Entry<E>(e, null, null);
+    newEntry.next = entry;
+    newEntry.previous = entry.previous;
+    entry.previous.next = newEntry;
+    entry.previous = newEntry;
 
-	size++;
+        size++;
 	modCount++;
 	return newEntry;
     }
@@ -868,9 +865,9 @@ public class LinkedList<E>
      * @return a shallow copy of this <tt>LinkedList</tt> instance
      */
     public Object clone() {
-        LinkedList<E> clone = null;
+        MyLinkedList<E> clone = null;
 	try {
-	    clone = (LinkedList<E>) super.clone();
+	    clone = (MyLinkedList<E>) super.clone();
 	} catch (CloneNotSupportedException e) {
 	    throw new InternalError();
 	}
@@ -1006,4 +1003,75 @@ public class LinkedList<E>
 	for (int i=0; i<size; i++)
             addBefore((E)s.readObject(), header);
     }
+
+
+    public static void main(String[] args) {
+        linkedListTest();
+    }
+
+    public static void linkedListTest() {
+
+        useAsListTest();
+
+        useAsQueue();
+
+        useAsStack();
+
+    }
+
+    public static void useAsListTest() {
+
+        MyLinkedList<String> linkedList = new MyLinkedList<String>();
+        linkedList.add("111");
+        linkedList.add("222");
+        linkedList.add("333");
+        linkedList.add("444");
+
+        for(int i = 0; i < linkedList.size(); i ++) {
+            System.out.print(linkedList.get(i) + ",");
+        }
+        System.out.println();
+
+    }
+
+    /**
+     * FIFO-先进先出
+     * FIFO-first in first out
+     */
+    public static void useAsQueue() {
+
+        MyLinkedList<String> linkedList = new MyLinkedList<String>();
+        linkedList.add("111");
+        linkedList.add("222");
+        linkedList.add("333");
+        linkedList.add("444");
+
+        System.out.println(linkedList.pop());
+        System.out.println(linkedList.pop());
+        System.out.println(linkedList.pop());
+        System.out.println(linkedList.pop());
+
+    }
+
+    /**
+     * LIFO-后进先出
+     * LIFO-last in first out
+     */
+    public static void useAsStack() {
+
+        MyLinkedList<String> linkedList = new MyLinkedList<String>();
+        linkedList.push("1111");
+        linkedList.push("2222");
+        linkedList.push("3333");
+        linkedList.push("4444");
+
+        System.out.println(linkedList.pop());
+        System.out.println(linkedList.pop());
+        System.out.println(linkedList.pop());
+        System.out.println(linkedList.pop());
+
+
+    }
+
+
 }
