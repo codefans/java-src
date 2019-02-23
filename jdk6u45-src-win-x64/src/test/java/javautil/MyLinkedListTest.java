@@ -1,16 +1,14 @@
-package util;
-
-import java.util.LinkedList;
+package javautil;
 
 /**
  * @Author: codefans
  * @Date: 2019-02-22 23:05
  */
 
-public class LinkedListTest {
+public class MyLinkedListTest {
 
     public static void main(String[] args) {
-        LinkedListTest linkedListTest = new LinkedListTest();
+        MyLinkedListTest linkedListTest = new MyLinkedListTest();
         linkedListTest.linkedListTest();
     }
 
@@ -26,7 +24,7 @@ public class LinkedListTest {
 
     public void useAsListTest() {
 
-        LinkedList<String> linkedList = new LinkedList<String>();
+        MyLinkedList<String> linkedList = new MyLinkedList<String>();
         linkedList.add("111");
         linkedList.add("222");
         linkedList.add("333");
@@ -45,7 +43,7 @@ public class LinkedListTest {
      */
     public void useAsQueue() {
 
-        LinkedList<String> linkedList = new LinkedList<String>();
+        MyLinkedList<String> linkedList = new MyLinkedList<String>();
         linkedList.add("111");
         linkedList.add("222");
         linkedList.add("333");
@@ -64,7 +62,7 @@ public class LinkedListTest {
      */
     public void useAsStack() {
 
-        LinkedList<String> linkedList = new LinkedList<String>();
+        MyLinkedList<String> linkedList = new MyLinkedList<String>();
         linkedList.push("1111");
         linkedList.push("2222");
         linkedList.push("3333");
