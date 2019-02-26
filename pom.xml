@@ -14,7 +14,19 @@
     </modules>  
     <properties> 
         <maven.deploy.skip>true</maven.deploy.skip>
-    </properties>  
+    </properties>
+
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.12</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <build> 
         <finalName>${project.artifactId}</finalName>  
         <plugins> 

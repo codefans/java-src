@@ -101,6 +101,10 @@ public interface SortedMap<K,V> extends Map<K,V> {
      * @return the comparator used to order the keys in this map,
      *         or <tt>null</tt> if this map uses the natural ordering
      *         of its keys
+     *
+     * 判断keys大小的比较器，
+     * 如果keys自己实现了Comparable接口，使用keys自己的比较器，则这个方法返回null。
+     *
      */
     Comparator<? super K> comparator();
 
@@ -132,6 +136,13 @@ public interface SortedMap<K,V> extends Map<K,V> {
      *         <tt>toKey</tt>; or if this map itself has a restricted
      *         range, and <tt>fromKey</tt> or <tt>toKey</tt> lies
      *         outside the bounds of the range
+     *
+     * 返回这个map的视图，范围是从[fromKey, toKey)，即大于等于fromKey，小于toKey。
+     * 如果fromKey和toKey相等，则返回空map
+     *
+     * 返回的map修改后, 本map值也会跟着变
+     * 反之亦然, 即本map修改后, 返回的map中的值也会跟着改变
+     *
      */
     SortedMap<K,V> subMap(K fromKey, K toKey);
 
@@ -159,6 +170,11 @@ public interface SortedMap<K,V> extends Map<K,V> {
      * @throws IllegalArgumentException if this map itself has a
      *         restricted range, and <tt>toKey</tt> lies outside the
      *         bounds of the range
+     *
+     * 返回这个map的视图，范围是小于toKey(不包含toKey)(如果键是时间的毫秒数, 那就是取逆时针方向的数据)。
+     *
+     * 返回的map修改后, 本map值也会跟着变
+     * 反之亦然, 即本map修改后, 返回的map中的值也会跟着改变
      */
     SortedMap<K,V> headMap(K toKey);
 
@@ -186,6 +202,12 @@ public interface SortedMap<K,V> extends Map<K,V> {
      * @throws IllegalArgumentException if this map itself has a
      *         restricted range, and <tt>fromKey</tt> lies outside the
      *         bounds of the range
+     *
+     * 返回这个map的视图，范围是大于等于fromKey(如果键是时间的毫秒数, 那就是取顺时针方向的数据)。
+     *
+     * 返回的map修改后, 本map值也会跟着变
+     * 反之亦然, 即本map修改后, 返回的map中的值也会跟着改变
+     *
      */
     SortedMap<K,V> tailMap(K fromKey);
 
@@ -194,6 +216,8 @@ public interface SortedMap<K,V> extends Map<K,V> {
      *
      * @return the first (lowest) key currently in this map
      * @throws NoSuchElementException if this map is empty
+     *
+     * 返回第一个key
      */
     K firstKey();
 
@@ -202,6 +226,8 @@ public interface SortedMap<K,V> extends Map<K,V> {
      *
      * @return the last (highest) key currently in this map
      * @throws NoSuchElementException if this map is empty
+     *
+     * 返回最后一个key
      */
     K lastKey();
 

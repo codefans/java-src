@@ -83,6 +83,11 @@ package java.util;
  * @see Comparator
  * @see Collection
  * @since 1.2
+ *
+ * 基于红黑树(Red-Black tree)实现的map, 红黑树是一种自平衡二叉查找树
+ *
+ *
+ *
  */
 
 public class TreeMap<K,V>
