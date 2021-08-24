@@ -25,6 +25,11 @@ import java.io.ObjectOutputStream;
  * interoperable with <tt>Hashtable</tt> in programs that rely on its
  * thread safety but not on its synchronization details.
  *
+ * 一个哈希表，支持完全并发的获取、适应预期并发的更新。这个类遵从了Hashtable一样的功能规范，
+ * 包含了与Hashtable每个方法相对应的不同版本的方法。但是，即使所有的操作都是线程安全的，
+ * 取值操作不需要加锁，并且也不支持一种方式锁定整个表以阻止所有的访问。
+ * 这个类与Hashtable在程序中能实现相同的线程安全的效果，但同步的实现细节不一样。
+ *
  * <p> Retrieval operations (including <tt>get</tt>) generally do not
  * block, so may overlap with update operations (including
  * <tt>put</tt> and <tt>remove</tt>). Retrievals reflect the results
@@ -69,7 +74,9 @@ import java.io.ObjectOutputStream;
  * @since 1.5
  * @author Doug Lea
  * @param <K> the type of keys maintained by this map
+ *           这个map维护的keys的类型
  * @param <V> the type of mapped values
+ *           映射的值的类型
  */
 public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
         implements ConcurrentMap<K, V>, Serializable {
@@ -200,10 +207,10 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
             this.value = value;
         }
 
-	@SuppressWarnings("unchecked")
-	static final <K,V> HashEntry<K,V>[] newArray(int i) {
-	    return new HashEntry[i];
-	}
+        @SuppressWarnings("unchecked")
+        static final <K,V> HashEntry<K,V>[] newArray(int i) {
+            return new HashEntry[i];
+        }
     }
 
     /**
@@ -291,9 +298,9 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
             setTable(HashEntry.<K,V>newArray(initialCapacity));
         }
 
-	@SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked")
         static final <K,V> Segment<K,V>[] newArray(int i) {
-	    return new Segment[i];
+            return new Segment[i];
         }
 
         /**
@@ -500,7 +507,7 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
                             int k = p.hash & sizeMask;
                             HashEntry<K,V> n = newTable[k];
                             newTable[k] = new HashEntry<K,V>(p.key, p.hash,
-                                                             n, p.value);
+                                    n, p.value);
                         }
                     }
                 }
@@ -534,7 +541,7 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
                         HashEntry<K,V> newFirst = e.next;
                         for (HashEntry<K,V> p = first; p != e; p = p.next)
                             newFirst = new HashEntry<K,V>(p.key, p.hash,
-                                                          newFirst, p.value);
+                                    newFirst, p.value);
                         tab[index] = newFirst;
                         count = c; // write-volatile
                     }
@@ -662,8 +669,8 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     public ConcurrentHashMap(Map<? extends K, ? extends V> m) {
         this(Math.max((int) (m.size() / DEFAULT_LOAD_FACTOR) + 1,
-                      DEFAULT_INITIAL_CAPACITY),
-             DEFAULT_LOAD_FACTOR, DEFAULT_CONCURRENCY_LEVEL);
+                DEFAULT_INITIAL_CAPACITY),
+                DEFAULT_LOAD_FACTOR, DEFAULT_CONCURRENCY_LEVEL);
         putAll(m);
     }
 
@@ -697,7 +704,7 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
         if (mcsum != 0) {
             for (int i = 0; i < segments.length; ++i) {
                 if (segments[i].count != 0 ||
-                    mc[i] != segments[i].modCount)
+                        mc[i] != segments[i].modCount)
                     return false;
             }
         }
@@ -919,7 +926,7 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * @throws NullPointerException if the specified key is null
      */
     public V remove(Object key) {
-	int hash = hash(key.hashCode());
+        int hash = hash(key.hashCode());
         return segmentFor(hash).remove(key, hash, null);
     }
 
@@ -1111,16 +1118,16 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
 
     final class KeyIterator
-	extends HashIterator
-	implements Iterator<K>, Enumeration<K>
+            extends HashIterator
+            implements Iterator<K>, Enumeration<K>
     {
         public K next()        { return super.nextEntry().key; }
         public K nextElement() { return super.nextEntry().key; }
     }
 
     final class ValueIterator
-	extends HashIterator
-	implements Iterator<V>, Enumeration<V>
+            extends HashIterator
+            implements Iterator<V>, Enumeration<V>
     {
         public V next()        { return super.nextEntry().value; }
         public V nextElement() { return super.nextEntry().value; }
@@ -1131,7 +1138,7 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * setValue changes to the underlying map.
      */
     final class WriteThroughEntry
-	extends AbstractMap.SimpleEntry<K,V>
+            extends AbstractMap.SimpleEntry<K,V>
     {
         WriteThroughEntry(K k, V v) {
             super(k,v);
@@ -1146,7 +1153,7 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
          * removed in which case the put will re-establish). We do not
          * and cannot guarantee more.
          */
-	public V setValue(V value) {
+        public V setValue(V value) {
             if (value == null) throw new NullPointerException();
             V v = super.setValue(value);
             ConcurrentHashMap.this.put(getKey(), value);
@@ -1155,8 +1162,8 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
 
     final class EntryIterator
-	extends HashIterator
-	implements Iterator<Entry<K,V>>
+            extends HashIterator
+            implements Iterator<Entry<K,V>>
     {
         public Map.Entry<K,V> next() {
             HashEntry<K,V> e = super.nextEntry();
@@ -1261,7 +1268,7 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * @param s the stream
      */
     private void readObject(java.io.ObjectInputStream s)
-        throws IOException, ClassNotFoundException  {
+            throws IOException, ClassNotFoundException  {
         s.defaultReadObject();
 
         // Initialize each segment to be minimally sized, and let grow.

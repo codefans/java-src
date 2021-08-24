@@ -159,10 +159,19 @@ public class ThreadLocal<T> {
      */
     public void set(T value) {
         Thread t = Thread.currentThread();
+        /**
+         * ThreadLocalMap是从当前线程中获取的
+         */
         ThreadLocalMap map = getMap(t);
         if (map != null)
+        /**
+         * ThreadLocalMap的key是ThreadLocal对象，而不是当前线程
+         */
             map.set(this, value);
         else
+        /**
+         * 创建Thread里面的threadLocals对象
+         */
             createMap(t, value);
     }
 
@@ -406,8 +415,8 @@ public class ThreadLocal<T> {
             int i = key.threadLocalHashCode & (len-1);
 
             for (Entry e = tab[i];
-		 e != null;
-		 e = tab[i = nextIndex(i, len)]) {
+                 e != null;
+                 e = tab[i = nextIndex(i, len)]) {
                 ThreadLocal k = e.get();
 
                 if (k == key) {
@@ -435,8 +444,8 @@ public class ThreadLocal<T> {
             int len = tab.length;
             int i = key.threadLocalHashCode & (len-1);
             for (Entry e = tab[i];
-		 e != null;
-		 e = tab[i = nextIndex(i, len)]) {
+                 e != null;
+                 e = tab[i = nextIndex(i, len)]) {
                 if (e.get() == key) {
                     e.clear();
                     expungeStaleEntry(i);
@@ -472,7 +481,7 @@ public class ThreadLocal<T> {
             // up refs in bunches (i.e., whenever the collector runs).
             int slotToExpunge = staleSlot;
             for (int i = prevIndex(staleSlot, len);
-		 (e = tab[i]) != null;
+                 (e = tab[i]) != null;
                  i = prevIndex(i, len))
                 if (e.get() == null)
                     slotToExpunge = i;
@@ -480,7 +489,7 @@ public class ThreadLocal<T> {
             // Find either the key or trailing null slot of run, whichever
             // occurs first
             for (int i = nextIndex(staleSlot, len);
-		 (e = tab[i]) != null;
+                 (e = tab[i]) != null;
                  i = nextIndex(i, len)) {
                 ThreadLocal k = e.get();
 
@@ -510,7 +519,7 @@ public class ThreadLocal<T> {
             }
 
             // If key not found, put new entry in stale slot
-            tab[staleSlot].value = null;   
+            tab[staleSlot].value = null;
             tab[staleSlot] = new Entry(key, value);
 
             // If there are any other stale entries in run, expunge them
@@ -534,7 +543,7 @@ public class ThreadLocal<T> {
             int len = tab.length;
 
             // expunge entry at staleSlot
-            tab[staleSlot].value = null;   
+            tab[staleSlot].value = null;
             tab[staleSlot] = null;
             size--;
 
@@ -542,7 +551,7 @@ public class ThreadLocal<T> {
             Entry e;
             int i;
             for (i = nextIndex(staleSlot, len);
-		 (e = tab[i]) != null;
+                 (e = tab[i]) != null;
                  i = nextIndex(i, len)) {
                 ThreadLocal k = e.get();
                 if (k == null) {
