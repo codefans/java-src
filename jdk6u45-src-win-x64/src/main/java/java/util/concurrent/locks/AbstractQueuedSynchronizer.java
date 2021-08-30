@@ -415,29 +415,52 @@ public abstract class AbstractQueuedSynchronizer
     /**
      * Creates a new <tt>AbstractQueuedSynchronizer</tt> instance
      * with initial synchronization state of zero.
+     * 创建一个新的AbstractQueuedSynchronizer对象
+     * 将同步状态state初始化为0
      */
     protected AbstractQueuedSynchronizer() { }
 
     /**
      * Wait queue node class.
+     * 等待队列node类
      *
      * <p>The wait queue is a variant of a "CLH" (Craig, Landin, and
      * Hagersten) lock queue. CLH locks are normally used for
-     * spinlocks.  We instead use them for blocking synchronizers, but
+     * spinlocks.
+     * We instead use them for blocking synchronizers, but
      * use the same basic tactic of holding some of the control
-     * information about a thread in the predecessor of its node.  A
-     * "status" field in each node keeps track of whether a thread
-     * should block.  A node is signalled when its predecessor
-     * releases.  Each node of the queue otherwise serves as a
-     * specific-notification-style monitor holding a single waiting
-     * thread. The status field does NOT control whether threads are
-     * granted locks etc though.  A thread may try to acquire if it is
-     * first in the queue. But being first does not guarantee success;
-     * it only gives the right to contend.  So the currently released
-     * contender thread may need to rewait.
+     * information about a thread in the predecessor of its node.
+     * A "status" field in each node keeps track of whether a thread
+     * should block.
+     * A node is signalled when its predecessor releases.
+     * Each node of the queue otherwise serves as a specific-notification-style monitor holding a single waiting thread.
+     * The status field does NOT control whether threads are granted locks etc though.
+     * A thread may try to acquire if it is first in the queue. But being first does not guarantee success;
+     * it only gives the right to contend.
+     * So the currently released contender thread may need to rewait.
+     * 等待队列是“CLH”（Craig、Landin 和 Hagersten）锁定队列的变体。 CLH 锁通常用于自旋锁。
+     * 我们改为使用它们来作为阻塞同步器，但是使用相同的基本策略来保存在前驱节点中的线程的控制信息。
+     * 每个节点中的一个“状态”字段跟踪线程是否需要阻塞。
+     * 一个节点被唤醒，当它的前置节点释放。
+     * 除此以外, 队列的每个节点都持有一个单独的等待线程，作为一个特定通知式监视器。
+     * 状态字段不控制线程是否被授予锁等。
+     * 一个线程可能会尝试获取(锁)，如果它是队列中的第一个。 但成为第一并不能保证成功；
+     * 它只给予竞争的权利。
+     * 所以当前释放的竞争线程可能需要重新等待。
+     *
+     * tactic-策略
+     * predecessor-前驱
+     * otherwise-除此以外
+     * contend-抗衡、竞争、争夺
+     * currently-当前
+     * contender-竞争者
      *
      * <p>To enqueue into a CLH lock, you atomically splice it in as new
      * tail. To dequeue, you just set the head field.
+     * 要加入 CLH 锁，您可以原子地将其拼接为新的尾部。 要出列，您只需设置 head 字段。
+     * atomically-原子地
+     * splice it in-拼接起来
+     *
      * <pre>
      *      +------+  prev +-----+       +-----+
      * head |      | <---- |     | <---- |     |  tail
@@ -451,6 +474,12 @@ public abstract class AbstractQueuedSynchronizer
      * more work for nodes to determine who their successors are,
      * in part to deal with possible cancellation due to timeouts
      * and interrupts.
+     * 插入 CLH 队列只需要一个尾结点的原子操作，所以有一个简单的原子点来划分未入队和已入队。
+     * 同样，出队只涉及更新“头节点”。 然而，确定谁是继任者需要更多的工作，
+     * 部分是为了处理可能因超时和中断而取消的问题。
+     *
+     * demarcation-划分
+     * successor-继任者
      *
      * <p>The "prev" links (not used in original CLH locks), are mainly
      * needed to handle cancellation. If a node is cancelled, its
