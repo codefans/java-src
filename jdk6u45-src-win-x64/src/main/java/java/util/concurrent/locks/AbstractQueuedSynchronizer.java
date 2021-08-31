@@ -481,49 +481,85 @@ public abstract class AbstractQueuedSynchronizer
      * demarcation-划分
      * successor-继任者
      *
-     * <p>The "prev" links (not used in original CLH locks), are mainly
-     * needed to handle cancellation. If a node is cancelled, its
-     * successor is (normally) relinked to a non-cancelled
-     * predecessor. For explanation of similar mechanics in the case
-     * of spin locks, see the papers by Scott and Scherer at
+     * <p>The "prev" links (not used in original CLH locks), are mainly needed to handle cancellation.
+     * If a node is cancelled, its successor is (normally) relinked to a non-cancelled predecessor.
+     * For explanation of similar mechanics in the case of spin locks, see the papers by Scott and Scherer at
+     * http://www.cs.rochester.edu/u/scott/synchronization/
+     * “prev”链接（未在原始 CLH 锁中使用），主要是需要处理取消。
+     * 如果一个节点被取消，它的继任者（通常）重新链接到未取消的前任。
+     * 关于自旋锁类似机制的解释，请参阅 Scott 和 Scherer 的论文，网址为
      * http://www.cs.rochester.edu/u/scott/synchronization/
      *
+     * explanation-解释
+     * similar mechanics-类似的机制
+     * in the case of-关于
+     *
      * <p>We also use "next" links to implement blocking mechanics.
+     *
      * The thread id for each node is kept in its own node, so a
      * predecessor signals the next node to wake up by traversing
-     * next link to determine which thread it is.  Determination of
-     * successor must avoid races with newly queued nodes to set
-     * the "next" fields of their predecessors.  This is solved
-     * when necessary by checking backwards from the atomically
-     * updated "tail" when a node's successor appears to be null.
-     * (Or, said differently, the next-links are an optimization
-     * so that we don't usually need a backward scan.)
+     * next link to determine which thread it is.
      *
-     * <p>Cancellation introduces some conservatism to the basic
-     * algorithms.  Since we must poll for cancellation of other
-     * nodes, we can miss noticing whether a cancelled node is
-     * ahead or behind us. This is dealt with by always unparking
-     * successors upon cancellation, allowing them to stabilize on
-     * a new predecessor.
+     * Determination of successor must avoid races with newly queued nodes to set the "next" fields of their predecessors.
      *
-     * <p>CLH queues need a dummy header node to get started. But
-     * we don't create them on construction, because it would be wasted
-     * effort if there is never contention. Instead, the node
-     * is constructed and head and tail pointers are set upon first
-     * contention.
+     * This is solved when necessary by checking backwards from the atomically updated "tail" when a node's successor appears to be null.
+     * (Or, said differently, the next-links are an optimization so that we don't usually need a backward scan.)
      *
-     * <p>Threads waiting on Conditions use the same nodes, but
-     * use an additional link. Conditions only need to link nodes
-     * in simple (non-concurrent) linked queues because they are
-     * only accessed when exclusively held.  Upon await, a node is
-     * inserted into a condition queue.  Upon signal, the node is
-     * transferred to the main queue.  A special value of status
-     * field is used to mark which queue a node is on.
+     * 我们还使用“next”链接来实现阻塞机制。
+     * 每个节点的线程 id 都保存在它自己的节点中，所以一个前继节点通过遍历下一个链接，来唤醒下一个节点，并确定它是哪个线程。
+     * 确定后继者必须避免与新排队的节点竞争以设置他们前节点的“next”字段。
+     * 这就解决了，当一个节点的后继节点为null，原子更新tail节点时必要的向后检查.
+     * （或者，换句话说，next链接是一个优化，这样我们通常不需要向后扫描。）
      *
-     * <p>Thanks go to Dave Dice, Mark Moir, Victor Luchangco, Bill
-     * Scherer and Michael Scott, along with members of JSR-166
-     * expert group, for helpful ideas, discussions, and critiques
-     * on the design of this class.
+     * race-比赛、竞争
+     *
+     *
+     * <p>Cancellation introduces some conservatism to the basic algorithms.
+     *
+     * Since we must poll for cancellation of other nodes, we can miss noticing whether a cancelled node is ahead or behind us.
+     *
+     * This is dealt with by always unparking successors upon cancellation, allowing them to stabilize on a new predecessor.
+     *
+     * 取消为基本算法引入了一些保守性。
+     *
+     * 由于我们必须轮询其他节点的取消，因此我们可能无法注意到被取消的节点是在我们前面还是在我们后面。
+     *
+     * 这是通过在取消时总是解除后继者来处理的，使他们能够稳定在新的前任者上。
+     *
+     * introduce-介绍、引入
+     * conservatism-保守主义
+     * stabilize-稳定
+     *
+     * <p>CLH queues need a dummy header node to get started.
+     * But we don't create them on construction, because it would be wasted effort if there is never contention.
+     * Instead, the node is constructed and head and tail pointers are set upon first contention.
+     * CLH 队列需要一个虚拟头节点来启动。
+     * 但是我们不会在构建时创建它们，因为如果从不存在争用，那将是浪费精力。
+     * 相反，在第一次争用时构造节点并设置头指针和尾指针。
+     *
+     * dummy-假的、虚拟的
+     * construction-建造
+     * effort-努力
+     * contention-竞争
+     *
+     * <p>Threads waiting on Conditions use the same nodes, but use an additional link.
+     * Conditions only need to link nodes in simple (non-concurrent) linked queues because they are only accessed when exclusively held.
+     * Upon await, a node is inserted into a condition queue.
+     * Upon signal, the node is transferred to the main queue.
+     * A special value of status field is used to mark which queue a node is on.
+     *
+     * 在Conditions上等待的线程使用相同的节点，但使用额外的链接。
+     * Conditions只需要链接简单（非并发）链接队列中的节点，因为它们仅在独占时才被访问。
+     * 在等待时，一个节点被插入到条件队列中。
+     * 在唤醒时，节点被转移到主队列。
+     * status 字段的特殊值用于标记节点所在的队列。
+     *
+     * <p>Thanks go to Dave Dice, Mark Moir, Victor Luchangco, Bill Scherer and Michael Scott,
+     * along with members of JSR-166 expert group, for helpful ideas, discussions, and critiques on the design of this class.
+     *
+     * <p>感谢 Dave Dice、Mark Moir、Victor Luchangco、Bill Scherer 和 Michael Scott
+     * 以及 JSR-166 专家组的成员，感谢他们对这个类的设计提出有益的想法、讨论和批评。
+     *
      */
     static final class Node {
         /** waitStatus value to indicate thread has cancelled */
